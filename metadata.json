@@ -1,0 +1,6 @@
+{
+  "name": "VEDA",
+  "description": "Smart student companion for hostel attendance, notices, mess menu, and warden contacts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
