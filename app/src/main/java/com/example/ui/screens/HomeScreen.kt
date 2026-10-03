@@ -1,8 +1,5 @@
 package com.example.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,7 +53,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.model.AttendanceRecord
 import com.example.data.model.StudentProfile
+import com.example.ui.components.AttendanceItemCard
 import com.example.ui.components.CozyDormEmptyIllustration
 import com.example.ui.theme.VedaAmber
 import com.example.ui.theme.VedaBluePrimary
@@ -72,11 +71,12 @@ fun HomeScreen(
     isAttendanceOpen: Boolean,
     isAttendanceMarked: Boolean,
     unreadNoticesCount: Int,
+    attendanceList: List<AttendanceRecord> = emptyList(),
     onMarkPresentClick: () -> Unit,
     onNoticesClick: () -> Unit,
     onMessMenuClick: () -> Unit,
     onHostelInfoClick: () -> Unit,
-    onToggleSession: () -> Unit,
+    onViewAllClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -161,39 +161,6 @@ fun HomeScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        // Session Mode Switcher Pill (Enables switching between Mockup 5 Empty State and Mockup 6 Active State)
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .clickable { onToggleSession() }
-                .testTag("toggle_session_pill")
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(
-                            color = if (isAttendanceOpen && !isAttendanceMarked) VedaCoral else VedaGreen,
-                            shape = CircleShape
-                        )
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (isAttendanceOpen && !isAttendanceMarked) "Session Active (Tap to toggle empty state)" else "Session Closed (Tap to simulate active session)",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
 
         // Center Content Area: State A (Empty state) or State B (Attendance Open Banner)
         if (isAttendanceOpen && !isAttendanceMarked) {
@@ -388,6 +355,44 @@ fun HomeScreen(
                 testTag = "home_tile_hostel",
                 modifier = Modifier.weight(1f)
             )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Recent Activity Section (Displays up to 5 recent records on Dashboard)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Recent Activity",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = "View All",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = VedaBluePrimary,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable { onViewAllClick() }
+                    .padding(horizontal = 6.dp, vertical = 4.dp)
+                    .testTag("home_view_all_button")
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            val recentFive = attendanceList.take(5)
+            recentFive.forEach { record ->
+                AttendanceItemCard(record = record)
+            }
         }
 
         Spacer(modifier = Modifier.height(30.dp))

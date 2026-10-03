@@ -53,6 +53,7 @@ import com.example.data.model.AttendanceStats
 import com.example.data.model.AttendanceStatus
 import com.example.data.model.Notice
 import com.example.data.model.SessionType
+import com.example.ui.components.AttendanceItemCard
 import com.example.ui.components.CircularAttendanceGauge
 import com.example.ui.theme.VedaAmber
 import com.example.ui.theme.VedaBluePrimary
@@ -70,6 +71,7 @@ fun ActivityScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedMonth by remember { mutableStateOf("September 2026") }
+    var showAllRecords by remember { mutableStateOf(true) }
 
     Column(
         modifier = modifier
@@ -255,16 +257,22 @@ fun ActivityScreen(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = "View All",
+                            text = if (showAllRecords) "Show Less" else "View All",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = VedaBluePrimary
+                            color = VedaBluePrimary,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .clickable { showAllRecords = !showAllRecords }
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .testTag("activity_view_all_button")
                         )
                     }
                 }
 
-                // List of Attendance logs
-                items(attendanceList) { record ->
+                // List of Attendance logs (Shows all if showAllRecords is true, else top 5)
+                val displayedRecords = if (showAllRecords) attendanceList else attendanceList.take(5)
+                items(displayedRecords) { record ->
                     AttendanceItemCard(record = record)
                 }
 
@@ -316,92 +324,6 @@ fun StatRow(label: String, count: Int, dotColor: Color) {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-    }
-}
-
-@Composable
-fun AttendanceItemCard(record: AttendanceRecord) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
-                // Session Icon
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = when (record.sessionType) {
-                                SessionType.NIGHT -> Color(0xFF1E293B)
-                                SessionType.EVENING -> Color(0xFFFEF3C7)
-                                SessionType.MORNING -> Color(0xFFE0F2FE)
-                            },
-                            shape = RoundedCornerShape(10.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = when (record.sessionType) {
-                            SessionType.NIGHT -> Icons.Filled.NightsStay
-                            SessionType.EVENING -> Icons.Filled.WbSunny
-                            SessionType.MORNING -> Icons.Filled.Brightness5
-                        },
-                        contentDescription = null,
-                        tint = when (record.sessionType) {
-                            SessionType.NIGHT -> VedaSky
-                            SessionType.EVENING -> VedaAmber
-                            SessionType.MORNING -> VedaBluePrimary
-                        },
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column {
-                    Text(
-                        text = record.title,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "${record.date} • ${record.timestamp}",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            // Status Badge
-            Surface(
-                color = if (record.status == AttendanceStatus.PRESENT) Color(0xFFD1FAE5) else Color(0xFFFEE2E2),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = if (record.status == AttendanceStatus.PRESENT) "Present" else "Missed",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (record.status == AttendanceStatus.PRESENT) Color(0xFF047857) else Color(0xFFB91C1C),
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                )
-            }
-        }
     }
 }
 
