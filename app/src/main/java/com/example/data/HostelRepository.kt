@@ -92,6 +92,30 @@ class HostelRepository {
                 date = "26 Sep 2026",
                 sessionType = SessionType.NIGHT,
                 status = AttendanceStatus.PRESENT
+            ),
+            AttendanceRecord(
+                id = "att_8",
+                title = "Morning Attendance",
+                timestamp = "07:45 AM",
+                date = "25 Sep 2026",
+                sessionType = SessionType.MORNING,
+                status = AttendanceStatus.PRESENT
+            ),
+            AttendanceRecord(
+                id = "att_9",
+                title = "Night Attendance",
+                timestamp = "08:20 PM",
+                date = "24 Sep 2026",
+                sessionType = SessionType.NIGHT,
+                status = AttendanceStatus.MISSED
+            ),
+            AttendanceRecord(
+                id = "att_10",
+                title = "Evening Attendance",
+                timestamp = "08:02 PM",
+                date = "23 Sep 2026",
+                sessionType = SessionType.EVENING,
+                status = AttendanceStatus.PRESENT
             )
         )
     )

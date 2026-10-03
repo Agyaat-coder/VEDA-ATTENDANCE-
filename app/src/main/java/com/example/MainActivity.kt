@@ -190,6 +190,7 @@ class MainActivity : ComponentActivity() {
                                             isAttendanceOpen = isAttendanceOpen,
                                             isAttendanceMarked = isAttendanceMarked,
                                             unreadNoticesCount = notices.count { it.isNew },
+                                            attendanceList = attendanceRecords,
                                             onMarkPresentClick = {
                                                 viewModel.navigateTo(AppDestination.ATTENDANCE_MARKING)
                                             },
@@ -204,12 +205,9 @@ class MainActivity : ComponentActivity() {
                                                 viewModel.selectTab(MainTab.HOSTEL)
                                                 viewModel.setHostelSubTab(0)
                                             },
-                                            onToggleSession = {
-                                                viewModel.toggleSessionOpen()
-                                                scope.launch {
-                                                    val state = if (!isAttendanceOpen) "Active" else "Closed"
-                                                    snackbarHostState.showSnackbar("Attendance Session is now $state")
-                                                }
+                                            onViewAllClick = {
+                                                viewModel.selectTab(MainTab.ACTIVITY)
+                                                viewModel.setActivitySubTab(0)
                                             }
                                         )
                                     }
